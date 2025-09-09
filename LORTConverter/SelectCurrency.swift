@@ -28,8 +28,8 @@ struct SelectCurrency: View {
                 
                 // Currency icon
                 LazyVGrid(columns: [GridItem(), GridItem(), GridItem()]) {
-                    ForEach(0..<5) { _ in
-                        CurrencyIcon(currencyImage: .copperpenny, currencyName: "Copper Penny")
+                    ForEach(Currency.allCases) { currency in
+                        CurrencyIcon(currencyImage: currency.image, currencyName: currency.name)
                     }
                 }
                 
