@@ -8,7 +8,8 @@ import SwiftUI
 
 struct SelectCurrency: View {
     @Environment(\.dismiss) var dismiss
-    @State var currency: Currency
+    @State var topCurrency: Currency
+    @State var bottomCurrency: Currency
     
     var body: some View {
          // ZStack
@@ -25,31 +26,14 @@ struct SelectCurrency: View {
                     .fontWeight(.bold)
                 
                 // Currency icon
-                LazyVGrid(columns: [GridItem(), GridItem(), GridItem()]) {
-                    ForEach(Currency.allCases) { currency in
-                        
-                        if self.currency == currency {
-                            CurrencyIcon(currencyImage: currency.image, currencyName: currency.name)
-                                .shadow(color: .black, radius: 10)
-                                .overlay {
-                                    RoundedRectangle(cornerRadius: 25)
-                                        .stroke(lineWidth: 3)
-                                        .opacity(0.5)
-                                }
-                        } else {
-                            CurrencyIcon(currencyImage: currency.image, currencyName: currency.name)
-                                .onTapGesture {
-                                    self.currency = currency
-                                }
-                        }
-                    }
-                }
+                IconGrid(currency: topCurrency)
                 
                 // Text
                 Text("Select the currency you would like to convert to:")
                     .fontWeight(.bold)
+                    .padding(.top)
                 
-        
+                IconGrid(currency: bottomCurrency)
                 
                 // Button
                 Button("Done") {
@@ -63,10 +47,11 @@ struct SelectCurrency: View {
             }
             .padding()
             .multilineTextAlignment(.center)
+            .foregroundStyle(.black)
         }
     }
 }
 
 #Preview {
-    SelectCurrency(currency: .silverPiece)
+    SelectCurrency(topCurrency: .copperPenny, bottomCurrency: .goldPenny)
 }

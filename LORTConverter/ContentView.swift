@@ -8,10 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var showExchangeInfo = false
-    @State private var leftText = ""
-    @State private var rightText = ""
+    @State var showExchangeInfo = false
+    @State var showSelectedCurrency = false
+    @State var leftText = ""
+    @State var rightText = ""
     
+    @State var leftCurrency: Currency = .goldPenny
+    @State var rightCurreny: Currency = .silverPiece
     
     var body: some View {
         
@@ -40,17 +43,20 @@ struct ContentView: View {
                         // Currency
                         HStack {
                             // Currency Image
-                            Image(.silverpiece)
+                            Image(leftCurrency.image)
                                 .resizable()
                                 .scaledToFit()
                                 .frame(height: 33)
                             
                             // Currency Text
-                            Text("Silver Piece")
+                            Text(leftCurrency.name)
                                 .font(.headline)
                                 .foregroundStyle(.white)
                         }
                         .padding(.bottom,-5)
+                        .onTapGesture {
+                            showSelectedCurrency.toggle()
+                        }
                         
                         // Text Field
                         TextField("Text Field", text: $leftText)
@@ -69,17 +75,20 @@ struct ContentView: View {
                         
                         HStack {
                             // Currency Text
-                            Text("Gold Piece")
+                            Text(rightCurreny.name)
                                 .font(.headline)
                                 .foregroundStyle(.white)
                             
                             // Currency Image
-                            Image(.goldpiece)
+                            Image(rightCurreny.image)
                                 .resizable()
                                 .scaledToFit()
                                 .frame(height: 33)
                         }
                         .padding(.bottom,-5)
+                        .onTapGesture {
+                            showSelectedCurrency.toggle()
+                        }
                         
                         // Text Field
                         TextField("Text Field", text: $rightText)  
@@ -111,11 +120,14 @@ struct ContentView: View {
                 .sheet(isPresented: $showExchangeInfo) {
                     ExchangeInfo()
                 }
+                .sheet(isPresented: $showSelectedCurrency) {
+                    SelectCurrency(topCurrency: leftCurrency, bottomCurrency: rightCurreny)
+                }
             }
         }
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView(leftCurrency: .goldPenny, rightCurreny: .goldPiece)
 }
