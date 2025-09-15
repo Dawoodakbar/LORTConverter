@@ -10,6 +10,9 @@ import SwiftUI
 struct ContentView: View {
     @State var showExchangeInfo = false
     @State var showSelectedCurrency = false
+    
+    @FocusState var leftTyping
+    @FocusState var rightTyping
     @State var leftText = ""
     @State var rightText = ""
     
@@ -61,6 +64,14 @@ struct ContentView: View {
                         // Text Field
                         TextField("Text Field", text: $leftText)
                             .textFieldStyle(.roundedBorder)
+                            .focused($leftTyping)
+                            .onChange(of: leftText) { newValue, oldValue in
+                                if leftTyping {
+                                    rightText = leftCurrency.convert(leftText, to: rightCurreny)
+                                }
+                            }
+                        
+                        
                             
                     }
                     
@@ -94,7 +105,12 @@ struct ContentView: View {
                         TextField("Text Field", text: $rightText)  
                             .textFieldStyle(.roundedBorder)
                             .multilineTextAlignment(.trailing)
-
+                            .focused($rightTyping)
+                            .onChange(of: rightText) {
+                                if rightTyping {
+                                    leftText = rightCurreny.convert(rightText, to: leftCurrency)
+                                }
+                            }
                     }
                 }
                 .padding()
