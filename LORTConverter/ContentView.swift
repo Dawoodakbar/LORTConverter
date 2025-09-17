@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import TipKit
 
 struct ContentView: View {
     @State var showExchangeInfo = false
@@ -18,6 +19,8 @@ struct ContentView: View {
     
     @State var leftCurrency: Currency = .goldPenny
     @State var rightCurreny: Currency = .silverPiece
+    
+    var currencyTip = CurrencyTip()
     
     var body: some View {
         
@@ -59,7 +62,9 @@ struct ContentView: View {
                         .padding(.bottom,-5)
                         .onTapGesture {
                             showSelectedCurrency.toggle()
+                            currencyTip.invalidate(reason: .actionPerformed)
                         }
+                        .popoverTip(currencyTip, arrowEdge: .bottom)
                         
                         // Text Field
                         TextField("Text Field", text: $leftText)
@@ -92,6 +97,7 @@ struct ContentView: View {
                         .padding(.bottom,-5)
                         .onTapGesture {
                             showSelectedCurrency.toggle()
+                            currencyTip.invalidate(reason: .actionPerformed)
                         }
                         
                         // Text Field
@@ -123,28 +129,31 @@ struct ContentView: View {
                 }
                 .padding(.trailing)
             }
-            .onChange(of: rightText) {
-                if rightTyping {
-                    leftText = rightCurreny.convert(rightText, to: leftCurrency)
-                }
-            }
-            .onChange(of: leftText) { newValue, oldValue in
-                if leftTyping {
-                    rightText = leftCurrency.convert(leftText, to: rightCurreny)
-                }
-            }
-            .onChange(of: leftCurrency) {
+        }
+        .task {
+            try? Tips.configure()
+        }
+        .onChange(of: rightText) {
+            if rightTyping {
                 leftText = rightCurreny.convert(rightText, to: leftCurrency)
             }
-            .onChange(of: rightCurreny) {
+        }
+        .onChange(of: leftText) { newValue, oldValue in
+            if leftTyping {
                 rightText = leftCurrency.convert(leftText, to: rightCurreny)
             }
-            .sheet(isPresented: $showExchangeInfo) {
-                ExchangeInfo()
-            }
-            .sheet(isPresented: $showSelectedCurrency) {
-                SelectCurrency(topCurrency: $leftCurrency, bottomCurrency: $rightCurreny)
-            }
+        }
+        .onChange(of: leftCurrency) {
+            leftText = rightCurreny.convert(rightText, to: leftCurrency)
+        }
+        .onChange(of: rightCurreny) {
+            rightText = leftCurrency.convert(leftText, to: rightCurreny)
+        }
+        .sheet(isPresented: $showExchangeInfo) {
+            ExchangeInfo()
+        }
+        .sheet(isPresented: $showSelectedCurrency) {
+            SelectCurrency(topCurrency: $leftCurrency, bottomCurrency: $rightCurreny)
         }
     }
 }
